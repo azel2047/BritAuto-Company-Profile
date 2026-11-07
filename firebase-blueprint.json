@@ -1,0 +1,85 @@
+{
+  "entities": {
+    "Consultation": {
+      "title": "Consultation",
+      "description": "Catatan konsultasi dan pra-diagnosa kendala mobil Inggris milik pelanggan",
+      "type": "object",
+      "properties": {
+        "ownerId": {
+          "type": "string",
+          "description": "Firebase Auth UID pemilik catatan kendaraan",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "merek": {
+          "type": "string",
+          "description": "Merek mobil Inggris",
+          "enum": ["Jaguar", "Land Rover", "Bentley", "Rolls-Royce"],
+          "minLength": 2,
+          "maxLength": 32
+        },
+        "modelTahun": {
+          "type": "string",
+          "description": "Model dan tahun kendaraan",
+          "minLength": 2,
+          "maxLength": 100
+        },
+        "layanan": {
+          "type": "string",
+          "description": "Kategori layanan yang dipilih",
+          "minLength": 2,
+          "maxLength": 80
+        },
+        "keluhan": {
+          "type": "string",
+          "description": "Deskripsi keluhan atau gejala masalah pada kendaraan",
+          "minLength": 5,
+          "maxLength": 1000
+        },
+        "catatanDiagnosa": {
+          "type": "string",
+          "description": "Ringkasan hasil analisis teknis awal untuk dibawa ke bengkel",
+          "minLength": 0,
+          "maxLength": 4000
+        },
+        "status": {
+          "type": "string",
+          "description": "Status tindak lanjut catatan konsultasi",
+          "enum": ["tercatat", "dikonsultasikan", "selesai"],
+          "minLength": 5,
+          "maxLength": 20
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Waktu pembuatan catatan"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Waktu pembaruan terakhir"
+        }
+      },
+      "required": [
+        "ownerId",
+        "merek",
+        "modelTahun",
+        "layanan",
+        "keluhan",
+        "catatanDiagnosa",
+        "status",
+        "createdAt",
+        "updatedAt"
+      ]
+    }
+  },
+  "firestore": {
+    "/consultations/{consultationId}": {
+      "schema": {
+        "$ref": "#/entities/Consultation"
+      },
+      "description": "Koleksi catatan konsultasi servis dan gejala kendala kendaraan milik pengguna yang masuk"
+    }
+  }
+}

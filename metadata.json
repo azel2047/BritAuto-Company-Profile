@@ -1,0 +1,6 @@
+{
+  "name": "Brit Auto - Spesialis Mobil Inggris Jakarta Selatan",
+  "description": "Brit Auto melayani perawatan dan perbaikan Jaguar, Land Rover, Bentley dan Rolls-Royce di Cilandak, Jakarta Selatan. Teknisi berpengalaman, estimasi biaya jelas.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

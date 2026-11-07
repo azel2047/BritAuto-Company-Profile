@@ -1,0 +1,115 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Pillar 1: Global Safety Net (Default Deny)
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Reusable Hardened Helpers
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isVerifiedUser() {
+      return isSignedIn() && request.auth.token.email_verified == true;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() >= 1 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    // Pillar 2: Validation Blueprint for Consultation
+    function isValidConsultation(data) {
+      return data.keys().hasAll([
+          'ownerId',
+          'merek',
+          'modelTahun',
+          'layanan',
+          'keluhan',
+          'catatanDiagnosa',
+          'status',
+          'createdAt',
+          'updatedAt'
+        ])
+        && data.keys().hasOnly([
+          'ownerId',
+          'merek',
+          'modelTahun',
+          'layanan',
+          'keluhan',
+          'catatanDiagnosa',
+          'status',
+          'createdAt',
+          'updatedAt'
+        ])
+        && data.ownerId is string
+        && data.ownerId.size() >= 1
+        && data.ownerId.size() <= 128
+        && data.ownerId.matches('^[a-zA-Z0-9_\\-]+$')
+        && data.ownerId == request.auth.uid
+        && data.merek is string
+        && data.merek.size() >= 2
+        && data.merek.size() <= 32
+        && (data.merek == 'Jaguar' || data.merek == 'Land Rover' || data.merek == 'Bentley' || data.merek == 'Rolls-Royce')
+        && data.modelTahun is string
+        && data.modelTahun.size() >= 2
+        && data.modelTahun.size() <= 100
+        && data.layanan is string
+        && data.layanan.size() >= 2
+        && data.layanan.size() <= 80
+        && data.keluhan is string
+        && data.keluhan.size() >= 5
+        && data.keluhan.size() <= 1000
+        && data.catatanDiagnosa is string
+        && data.catatanDiagnosa.size() <= 4000
+        && data.status is string
+        && data.status.size() >= 5
+        && data.status.size() <= 20
+        && (data.status == 'tercatat' || data.status == 'dikonsultasikan' || data.status == 'selesai')
+        && data.createdAt is timestamp
+        && data.updatedAt is timestamp;
+    }
+
+    match /consultations/{consultationId} {
+      allow get: if isSignedIn()
+        && isValidId(consultationId)
+        && existing().ownerId == request.auth.uid;
+
+      allow list: if isSignedIn()
+        && existing().ownerId == request.auth.uid;
+
+      allow create: if isVerifiedUser()
+        && isValidId(consultationId)
+        && isValidConsultation(incoming())
+        && incoming().createdAt == request.time
+        && incoming().updatedAt == request.time;
+
+      allow update: if isVerifiedUser()
+        && isValidId(consultationId)
+        && isValidConsultation(incoming())
+        && existing().ownerId == request.auth.uid
+        && existing().status != 'selesai'
+        && incoming().ownerId == existing().ownerId
+        && incoming().createdAt == existing().createdAt
+        && incoming().updatedAt == request.time
+        && (
+          // Action 1: Update consultation notes or symptom details
+          incoming().diff(existing()).affectedKeys().hasOnly(['keluhan', 'catatanDiagnosa', 'status', 'updatedAt'])
+        );
+
+      allow delete: if isVerifiedUser()
+        && isValidId(consultationId)
+        && existing().ownerId == request.auth.uid;
+    }
+  }
+}

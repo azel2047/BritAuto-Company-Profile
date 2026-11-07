@@ -1,0 +1,182 @@
+@import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  --color-primary: #D32F3F;
+  --color-on-primary: #FFFFFF;
+  --color-primary-hover: #B82635;
+  --color-primary-subtle: #FBE9EB;
+  --color-secondary: #2F5BEA;
+  --color-on-secondary: #FFFFFF;
+  --color-secondary-subtle: #E6ECFD;
+  --color-navy: #0B1B3F;
+  --color-navy-deep: #060E24;
+  --color-background: #F4F6FB;
+  --color-surface: #FFFFFF;
+  --color-text-primary: #0B1B3F;
+  --color-text-secondary: #4A5578;
+  --color-text-on-dark: #FFFFFF;
+  --color-text-on-dark-secondary: #B8C2DD;
+  --color-border: #DDE2F0;
+  --color-success: #1F9D55;
+}
+
+.dark {
+  --color-background: #060E24;
+  --color-surface: #0B1B3F;
+  --color-text-primary: #FFFFFF;
+  --color-text-secondary: #B8C2DD;
+  --color-border: rgba(221, 226, 240, 0.16);
+}
+
+@theme {
+  --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+  --color-primary: #D32F3F;
+  --color-primary-hover: #B82635;
+  --color-primary-subtle: #FBE9EB;
+  --color-secondary: #2F5BEA;
+  --color-secondary-subtle: #E6ECFD;
+  --color-navy: #0B1B3F;
+  --color-navy-deep: #060E24;
+  --color-background: #F4F6FB;
+  --color-surface: #FFFFFF;
+  --color-text-primary: #0B1B3F;
+  --color-text-secondary: #4A5578;
+  --color-text-on-dark: #FFFFFF;
+  --color-text-on-dark-secondary: #B8C2DD;
+  --color-border-subtle: #DDE2F0;
+  --color-success: #1F9D55;
+}
+
+@layer base {
+  html {
+    font-family: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+    background-color: var(--color-background);
+    color: var(--color-text-primary);
+    scroll-behavior: smooth;
+    overflow-x: hidden;
+  }
+
+  body {
+    background-color: var(--color-background);
+    color: var(--color-text-primary);
+    overflow-x: hidden;
+    margin: 0;
+    transition: background-color 200ms ease-out, color 200ms ease-out;
+  }
+
+  *:focus-visible {
+    outline: 2px solid var(--color-secondary);
+    outline-offset: 2px;
+  }
+}
+
+/* Fluid Typography Scales */
+.heading-h1 {
+  font-size: clamp(2.25rem, 4.5vw + 1rem, 3.5rem);
+  line-height: clamp(2.75rem, 4.8vw + 1.1rem, 3.75rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+
+.heading-h2 {
+  font-size: clamp(1.75rem, 3vw + 0.8rem, 2.5rem);
+  line-height: clamp(2.25rem, 3.4vw + 0.9rem, 3rem);
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  text-wrap: balance;
+}
+
+.heading-h3 {
+  font-size: clamp(1.25rem, 1.5vw + 0.8rem, 1.5rem);
+  line-height: 2rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+/* Fluted glass vertical light streaks for the dark hero */
+.hero-fluted-bg {
+  background-color: #060E24;
+  background-image:
+    radial-gradient(circle at 50% 32%, rgba(47, 91, 234, 0.28) 0%, rgba(11, 27, 63, 0.45) 45%, rgba(6, 14, 36, 0.95) 80%),
+    repeating-linear-gradient(
+      90deg,
+      rgba(47, 91, 234, 0.03) 0px,
+      rgba(47, 91, 234, 0.03) 18px,
+      rgba(255, 255, 255, 0.04) 19px,
+      rgba(11, 27, 63, 0.18) 36px
+    ),
+    linear-gradient(180deg, #0B1B3F 0%, #060E24 100%);
+}
+
+/* Reeded glass overlay for the center hero workshop placeholder */
+.reeded-glass-overlay {
+  background-image: repeating-linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.08) 0px,
+    rgba(255, 255, 255, 0.02) 6px,
+    rgba(6, 14, 36, 0.28) 12px
+  );
+}
+
+/* Gentle floating keyframes for hero cards */
+@keyframes floatSlow {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes floatSlowDelayed {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.animate-float-slow {
+  animation: floatSlow 7s ease-in-out infinite;
+}
+
+.animate-float-center {
+  animation: floatSlowDelayed 6.5s ease-in-out 0.8s infinite;
+}
+
+.animate-float-right {
+  animation: floatSlow 7.5s ease-in-out 1.6s infinite;
+}
+
+/* Respect prefers-reduced-motion across all animations and transitions */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .animate-float-slow,
+  .animate-float-center,
+  .animate-float-right {
+    animation: none !important;
+    transform: none !important;
+  }
+
+  .reveal-section,
+  .stagger-item {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
